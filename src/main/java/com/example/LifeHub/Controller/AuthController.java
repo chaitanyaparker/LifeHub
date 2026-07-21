@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/Auth")
+@RequestMapping("/auth")
 @AllArgsConstructor
 public class AuthController {
 
@@ -35,11 +35,15 @@ public class AuthController {
     public ResponseEntity<APIResponse<LoginResponseDTO>> Login(
             @Valid @RequestBody LoginRequestDTO loginRequestDTO
     ){
-        LoginResponseDTO registerResponseDTO = authService.loginUser(loginRequestDTO);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(
-                        APIResponseUtil.success("User successfully Login", registerResponseDTO)
-                );
+
+        System.out.println("========== LOGIN HIT ==========");
+        System.out.println(loginRequestDTO.getEmail());
+
+        LoginResponseDTO response = authService.loginUser(loginRequestDTO);
+
+        return ResponseEntity.ok(
+                APIResponseUtil.success("User successfully Login", response)
+        );
     }
 
 }

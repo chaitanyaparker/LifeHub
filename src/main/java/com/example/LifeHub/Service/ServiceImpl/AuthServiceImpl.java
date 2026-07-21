@@ -7,91 +7,88 @@ import com.example.LifeHub.DTO.Response.RegisterResponseDTO;
 import com.example.LifeHub.Entity.User;
 import com.example.LifeHub.Enums.Role;
 import com.example.LifeHub.Repository.UserRepository;
+import com.example.LifeHub.Security.JWT.JwtService;
+import com.example.LifeHub.Security.custom.CustomUserDetail;
 import com.example.LifeHub.Service.AuthService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     @Override
     public RegisterResponseDTO registerUser(RegisterRequestDTO registerRequestDTO) {
 
-        if(userRepository.existsByEmail(registerRequestDTO.getEmail())){
-            throw new RuntimeException("Email is already exist");
+        if (userRepository.existsByEmail(registerRequestDTO.getEmail())) {
+            throw new RuntimeException("Email already exists");
         }
 
-        if(userRepository.existsByUsername(registerRequestDTO.getUsername())){
-            throw new RuntimeException("Username is already exist");
+        if (userRepository.existsByUsername(registerRequestDTO.getUsername())) {
+            throw new RuntimeException("Username already exists");
         }
-
 
         User user = new User();
-
         user.setFirstname(registerRequestDTO.getFirstName());
         user.setLastname(registerRequestDTO.getLastName());
         user.setUsername(registerRequestDTO.getUsername());
         user.setEmail(registerRequestDTO.getEmail());
+        user.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
+        user.setRole(Role.User);
 
-        user.setPassword(
-                passwordEncoder.encode(registerRequestDTO.getPassword())
-        );
+        User savedUser = userRepository.save(user);
 
-
-        user.setRole(Role.valueOf("USER"));
-
-
-        User result = userRepository.save(user);
-
-
-        RegisterResponseDTO registerResponseDTO = new RegisterResponseDTO();
-
-        registerResponseDTO.setId(result.getId());
-        registerResponseDTO.setEmail(result.getEmail());
-        registerResponseDTO.setUsername(result.getUsername());
-        registerResponseDTO.setRole(result.getRole());
-        registerResponseDTO.setMessage("User successfully registered");
-
-
-        return registerResponseDTO;
+        return RegisterResponseDTO.builder()
+                .id(savedUser.getId())
+                .email(savedUser.getEmail())
+                .username(savedUser.getUsername())
+                .role(savedUser.getRole())
+                .message("User registered successfully")
+                .build();
     }
-
-
 
     @Override
     public LoginResponseDTO loginUser(LoginRequestDTO loginRequestDTO) {
 
+        System.out.println("Step 1");
 
-        User user = userRepository.findByEmail(loginRequestDTO.getEmail())
-                .orElseThrow(() ->
-                        new RuntimeException("User not found")
-                );
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequestDTO.getEmail(),
+                        loginRequestDTO.getPassword()
+                )
+        );
 
-        if(!passwordEncoder.matches(
-                loginRequestDTO.getPassword(),
-                user.getPassword()
-        )){
-            throw new RuntimeException("Invalid password");
-        }
+        System.out.println("Step 2");
 
+        CustomUserDetail customUserDetail =
+                (CustomUserDetail) authentication.getPrincipal();
 
-        LoginResponseDTO loginResponseDTO = new LoginResponseDTO();
+        System.out.println("Step 3");
 
-        loginResponseDTO.setMessage("Login Successful");
-        loginResponseDTO.setUserId(user.getId());
-        loginResponseDTO.setUsername(user.getUsername());
-        loginResponseDTO.setEmail(user.getEmail());
-        loginResponseDTO.setRole(user.getRole());
+        User user = customUserDetail.getUser();
 
-        loginResponseDTO.setToken(null);
+        System.out.println("Step 4");
 
+        String token = jwtService.genrateToken(user);
 
-        return loginResponseDTO;
+        System.out.println("Step 5");
+
+        return LoginResponseDTO.builder()
+                .userId(user.getId())
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .role(user.getRole())
+                .Token(token)
+                .build();
     }
 }
