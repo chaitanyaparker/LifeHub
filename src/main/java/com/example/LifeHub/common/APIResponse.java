@@ -1,11 +1,17 @@
 package com.example.LifeHub.common;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Data
 @Builder
-public class APIResponse<T>{
+@NoArgsConstructor
+@AllArgsConstructor
+public class APIResponse<T> {
 
     private boolean success;
 
@@ -14,8 +20,4 @@ public class APIResponse<T>{
     private T data;
 
     private LocalDateTime timestamp;
-
-    public APIResponse(boolean success, String message, T data, LocalDateTime now) {
-
-    }
 }

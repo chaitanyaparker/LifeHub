@@ -134,7 +134,7 @@ public class UserManagementImpl implements UserManagement {
 
         UserResponseDTO dto = new UserResponseDTO();
 
-        dto.setId(user.getId());
+        dto.setId(user.getUserId());
         dto.setFirstname(user.getFirstname());
         dto.setLastname(user.getLastname());
         dto.setUsername(user.getUsername());
