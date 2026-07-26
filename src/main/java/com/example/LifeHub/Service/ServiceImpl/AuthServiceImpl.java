@@ -7,6 +7,7 @@ import com.example.LifeHub.DTO.Request.RegisterRequestDTO;
 import com.example.LifeHub.DTO.Response.LoginResponseDTO;
 import com.example.LifeHub.Entity.RefreshToken;
 import com.example.LifeHub.Entity.User;
+import com.example.LifeHub.Exception.UserAlreadyExistException;
 import com.example.LifeHub.Repository.UserRepository;
 import com.example.LifeHub.Security.JWT.JwtService;
 import com.example.LifeHub.Security.custom.CustomUserDetail;
@@ -42,11 +43,11 @@ public class AuthServiceImpl implements AuthService {
     public APIResponse<Void> registerUser(RegisterRequestDTO registerRequestDTO) throws MessagingException, UnsupportedEncodingException {
 
         if (userRepository.existsByEmail(registerRequestDTO.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new UserAlreadyExistException("Email already exists");
         }
 
         if (userRepository.existsByUsername(registerRequestDTO.getUsername())) {
-            throw new RuntimeException("Username already exists");
+            throw new UserAlreadyExistException("Username already exists");
         }
 
         String otp = generateOtp();

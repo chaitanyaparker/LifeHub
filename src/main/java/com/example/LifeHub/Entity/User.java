@@ -22,15 +22,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
+    @Column(nullable = false)
     private String firstname;
 
+    @Column(nullable = false)
     private String lastname;
 
+    @Column(nullable = false)
     private String username;
 
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
     private String profilePicture;
@@ -44,6 +48,13 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
+    private String Location;
+
+    private String TimeZone;
 
     @CreatedBy
     private LocalDateTime createdAt;

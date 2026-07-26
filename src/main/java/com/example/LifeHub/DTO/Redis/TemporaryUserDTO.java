@@ -2,8 +2,12 @@ package com.example.LifeHub.DTO.Redis;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class TemporaryUserDTO {
+public class TemporaryUserDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String firstName;
 

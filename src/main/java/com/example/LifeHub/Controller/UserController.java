@@ -1,6 +1,9 @@
 package com.example.LifeHub.Controller;
 
 import com.example.LifeHub.DTO.Request.UserRequestDTO;
+import com.example.LifeHub.DTO.Response.LoginActivityResponseDTO;
+import com.example.LifeHub.Entity.User;
+import com.example.LifeHub.Service.LoginActivityService;
 import com.example.LifeHub.Service.UserManagement;
 import com.example.LifeHub.common.APIResponse;
 import com.example.LifeHub.DTO.Response.UserResponseDTO;
@@ -19,6 +22,8 @@ import java.util.List;
 public class UserController {
 
     private final UserManagement userManagement;
+    private final LoginActivityService loginActivityService;
+
 
 
     @PostMapping
@@ -93,5 +98,19 @@ public class UserController {
                 APIResponseUtil.success("User Deleted Successfully", null)
         );
     }
+
+
+    @GetMapping("/login-activity")
+    public ResponseEntity<List<LoginActivityResponseDTO>> getLoginHistory(
+            @RequestParam Long userId
+    ) {
+
+        User user = loginActivityService.getLoginHistory(userId);
+
+        return ResponseEntity.ok(
+                loginActivityService.getLoginHistory(user)
+        );
+    }
+
 
 }

@@ -3,6 +3,7 @@ package com.example.LifeHub.Controller;
 import com.example.LifeHub.DTO.Request.LoginRequestDTO;
 import com.example.LifeHub.DTO.Request.RefreshTokenRequestDTO;
 import com.example.LifeHub.DTO.Request.RegisterRequestDTO;
+import com.example.LifeHub.DTO.Request.VerifyOtpRequest;
 import com.example.LifeHub.DTO.Response.LoginResponseDTO;
 import com.example.LifeHub.Service.AuthService;
 import com.example.LifeHub.common.APIResponse;
@@ -55,13 +56,22 @@ public class AuthController {
     }
 
     @PostMapping("/verify-otp")
-    public ResponseEntity<APIResponse<Void>> verifyOtp(
-            @RequestParam String email,
-            @RequestParam String otp
-    ) {
-        APIResponse<Void> response = authService.verifyOtp(email, otp);
+    public ResponseEntity<?> verifyOtp(
+            @RequestBody
+            VerifyOtpRequest request
+    ){
 
-        return ResponseEntity.ok(response);
+        boolean result = authService.verifyOtp(
+                request.getEmail(),
+                request.getOtp()
+        ).isSuccess();
+
+        if(result){
+            return ResponseEntity.ok("Verified");
+        }
+
+        return ResponseEntity.badRequest()
+                .body("Invalid OTP");
     }
 
     @PostMapping("/refresh-token")

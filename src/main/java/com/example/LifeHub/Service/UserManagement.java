@@ -2,6 +2,7 @@ package com.example.LifeHub.Service;
 
 import com.example.LifeHub.DTO.Request.UserRequestDTO;
 import com.example.LifeHub.DTO.Response.UserResponseDTO;
+import com.example.LifeHub.Entity.User;
 
 import java.util.List;
 
@@ -18,4 +19,6 @@ public interface UserManagement {
     UserResponseDTO deleteUser(Long UserId);
 
     UserResponseDTO getUserByUsername(String Username);
+
+    User getCurrentUser();
 }

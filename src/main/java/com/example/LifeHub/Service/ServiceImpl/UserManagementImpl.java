@@ -10,6 +10,8 @@ import com.example.LifeHub.Exception.UserNotFoundException;
 import com.example.LifeHub.Repository.UserRepository;
 import com.example.LifeHub.Service.UserManagement;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -148,5 +150,17 @@ public class UserManagementImpl implements UserManagement {
         dto.setUpdatedAt(user.getUpdatedAt());
 
         return dto;
+    }
+
+    @Override
+    public User getCurrentUser() {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 }
