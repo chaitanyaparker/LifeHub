@@ -101,14 +101,18 @@ public class UserController {
 
 
     @GetMapping("/login-activity")
-    public ResponseEntity<List<LoginActivityResponseDTO>> getLoginHistory(
-            @RequestParam Long userId
-    ) {
+    public ResponseEntity<APIResponse<List<LoginActivityResponseDTO>>> getLoginHistory() {
 
-        User user = loginActivityService.getLoginHistory(userId);
+        User user = userManagement.getCurrentUser();
+
+        List<LoginActivityResponseDTO> history =
+                loginActivityService.getLoginHistory(user);
 
         return ResponseEntity.ok(
-                loginActivityService.getLoginHistory(user)
+                APIResponseUtil.success(
+                        "Login history fetched successfully",
+                        history
+                )
         );
     }
 
